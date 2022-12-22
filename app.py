@@ -8,12 +8,77 @@ from linebot.exceptions import (
 )
 from linebot.models import *
 import re
+
+from flask import Flask, request, abort
+from flask import jsonify,  send_file
+from linebot import LineBotApi, WebhookHandler
+from linebot.exceptions import InvalidSignatureError
+from linebot.models import MessageEvent, TextMessage, TextSendMessage
+from flask import render_template, jsonify, send_from_directory
+from fsm import TocMachine
+
+
+
+
 app = Flask(__name__)
 
 # Channel Access Token
 line_bot_api = LineBotApi('kv7WepC6RAvFR9a0nXxYfGQhZ3hJYLzAFuwrULyI+EIOU4sHY78p5fQFlEfO+jX0p2hRcSmgxe4l72SSerOZ3Eh6eo29AVAaytqy5UJkBaX3JvwI7Cb+Xlt9YpZbdW3PaBzJsRhfCnHyoKGsxB5CFAdB04t89/1O/w1cDnyilFU=')
 # Channel Secret
 handler = WebhookHandler('3e999dcd43d945411168f6de59fde57e')
+
+
+machine = TocMachine(
+    states=["user", "secretState", "noteState",
+            "jokeState", "searchImage", "help", "weather"],
+    transitions=[
+        {
+            "trigger": "advance",
+            "source": "user",
+            "dest": "secretState",
+            "conditions": "is_going_to_secretState",
+        },
+        {
+            "trigger": "advance",
+            "source": "user",
+            "dest": "noteState",
+            "conditions": "is_going_to_noteState",
+        },
+        {
+            "trigger": "advance",
+            "source": "user",
+            "dest": "jokeState",
+            "conditions": "is_going_to_jokeState",
+        },
+        {
+            "trigger": "advance",
+            "source": "user",
+            "dest": "searchImage",
+            "conditions": "is_going_to_searchImage",
+        },
+        {
+            "trigger": "advance",
+            "source": "user",
+            "dest": "help",
+            "conditions": "is_going_to_help",
+        },
+        {
+            "trigger": "advance",
+            "source": "user",
+            "dest": "weather",
+            "conditions": "is_going_to_weather",
+        },
+        {"trigger": "go_back", "source": [
+            "secretState", "noteState", "jokeState", "searchImage", "help", "weather"], "dest": "user"},
+    ],
+    initial="user",
+    auto_transitions=False,
+    show_conditions=True,
+)
+
+
+line_bot_api.push_message('U20ef15015b2a770224a03288132f4a31', TextSendMessage(text='我是你的個人小助理，很高興為你服務，輸入"幫助"查看如何使用'))
+
 
 # 監聽所有來自 /callback 的 Post Request
 @app.route("/callback", methods=['POST'])
@@ -33,38 +98,22 @@ def callback():
 # 處理訊息
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-    message = text=event.message.text
-    if message in [ 'help', '幫助']:
-        line_bot_api.reply_message(event.reply_token, TextSendMessage(text='?'))
-    if re.match('告訴我秘密',message):
-        buttons_template_message = TemplateSendMessage(
-        alt_text='秘密區',
-        template=ButtonsTemplate(
-            thumbnail_image_url='https://i.imgur.com/EKnxFZn.jpg',
-            title='個人助理為您服務',
-            text='選單功能',
-            actions=[
-                PostbackAction(
-                    label='偷偷傳資料',
-                    display_text='檯面上',
-                    data='action=檯面下'
-                ),
-                MessageAction(
-                    label='光明正大傳資料',
-                    text='我就是資料'
-                ),
-                URIAction(
-                    label='行銷搬進大程式',
-                    uri='https://marketingliveincode.com/'
-                )
-            ]
-        )
-    )
-        line_bot_api.reply_message(event.reply_token, buttons_template_message)
+    if event.source.user_id != "Udeadbeefdeadbeefdeadbeefdeadbeef":
+
+        #'
+
+        # for i in event.message.text:
+
+        #     pretty_text += i
+        #     pretty_text += random.choice(pretty_note)
+        response = machine.advance(event)
+        if response == False:
+            line_bot_api.reply_message(
+                event.reply_token,
+                TextSendMessage(text='輸入"幫助"查看如何使用')
+            )
+    
         
-    # # if message in [ 'help', '幫助']:
-    # # else:
-    line_bot_api.reply_message(event.reply_token,TextSendMessage(text='輸入"幫助"查看如何使用'))
     
 
 import os
