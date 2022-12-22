@@ -202,7 +202,7 @@ class TocMachine(GraphMachine):
 
     def on_enter_help(self, event):
         line_bot_api.reply_message(
-            event.reply_token, TextSendMessage(text="可用指令'幫助''筆記''搜尋''天氣'"))
+            event.reply_token, TextSendMessage(text="可用指令\n1.'幫助'\n2.'筆記'\n3.'搜尋'\n4.'天氣'\n5.'笑話'"))
         self.go_back()
 
     def on_exit_help(self):
