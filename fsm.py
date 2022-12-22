@@ -18,7 +18,6 @@ from linebot.models import MessageEvent, TextMessage, TextSendMessage, ImageSend
 from flask import render_template, jsonify, send_from_directory
 
 
-import configparser
 import re
 import random
 
@@ -28,11 +27,6 @@ import requests
 
 import json
 
-# config = configparser.ConfigParser()
-# config.read('config.ini')
-
-# handler = WebhookHandler(config.get('line-bot', 'channel_secret'))
-# line_bot_api = LineBotApi(config.get('line-bot', 'channel_access_token'))
 
 # Channel Access Token
 line_bot_api = LineBotApi('kv7WepC6RAvFR9a0nXxYfGQhZ3hJYLzAFuwrULyI+EIOU4sHY78p5fQFlEfO+jX0p2hRcSmgxe4l72SSerOZ3Eh6eo29AVAaytqy5UJkBaX3JvwI7Cb+Xlt9YpZbdW3PaBzJsRhfCnHyoKGsxB5CFAdB04t89/1O/w1cDnyilFU=')

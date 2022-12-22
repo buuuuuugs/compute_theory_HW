@@ -7,7 +7,6 @@ from linebot.exceptions import (
     InvalidSignatureError
 )
 from linebot.models import *
-import re
 
 from flask import Flask, request, abort
 from flask import jsonify,  send_file
