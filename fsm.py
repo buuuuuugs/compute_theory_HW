@@ -63,14 +63,14 @@ class TocMachine(GraphMachine):
         text = event.message.text
         return ("笑話" in text)              
 
-    def is_going_to_searchImage(self, event):
+    def is_going_to_searchImageState(self, event):
         text = event.message.text
         return ("搜尋" in text)
-    def is_going_to_help(self, event):
+    def is_going_to_helpState(self, event):
         text = event.message.text
-        return (("幫助" in text) or ("help" in text))
+        return (("幫助" in text) or ("helpState" in text))
 
-    def is_going_to_weather(self, event):
+    def is_going_to_weatherState(self, event):
         text = event.message.text
         return ("天氣" in text)
 
@@ -165,7 +165,7 @@ class TocMachine(GraphMachine):
 
     # search image
 
-    def on_enter_searchImage(self, event):
+    def on_enter_searchImageState(self, event):
         text = str(event.message.text)
         tmp = text.split(" ")
         text = tmp[1]
@@ -195,24 +195,24 @@ class TocMachine(GraphMachine):
 
         self.go_back()
 
-    def on_exit_searchImage(self):
+    def on_exit_searchImageState(self):
         line_bot_api.push_message(to_user, TextSendMessage(text="希望這是你要搜尋的圖片"))
 
     # answer
 
-    def on_enter_help(self, event):
+    def on_enter_helpState(self, event):
         line_bot_api.reply_message(
             event.reply_token, TextSendMessage(text="可用指令\n1.'幫助'\n2.'筆記'\n3.'搜尋'\n4.'天氣'\n5.'笑話'"))
         self.go_back()
 
-    def on_exit_help(self):
+    def on_exit_helpState(self):
         line_bot_api.push_message(to_user, TextSendMessage(text="有問題歡迎問我"))
 
     # weather
-    def on_enter_weather(self, event):
+    def on_enter_weatherState(self, event):
         text = str(event.message.text)
         tmp = text.split(" ")
-        city = tmp[1]
+        city = tmp[0]
 
         token = "CWB-7A3D016E-7F19-40AA-94D6-E29866104ED3"
         url = 'https://opendata.cwb.gov.tw/api/v1/rest/datastore/F-C0032-001?Authorization=' + \
@@ -246,9 +246,9 @@ class TocMachine(GraphMachine):
         line_bot_api.reply_message(event.reply_token, TextSendMessage(text=t))
         if int(maxt) < 20:
             line_bot_api.push_message(
-                to_user, TextSendMessage(text="天氣冷要注意保暖，出門記得帶個雨具<3"))
+                to_user, TextSendMessage(text="天氣冷要注意保暖"))
 
         self.go_back()
 
-    def on_exit_weather(self):
+    def on_exit_weatherState(self):
         pass

@@ -29,7 +29,7 @@ handler = WebhookHandler('3e999dcd43d945411168f6de59fde57e')
 
 machine = TocMachine(
     states=["user", "secretState", "noteState",
-            "jokeState", "searchImage", "help", "weather"],
+            "jokeState", "searchImageState", "helpState", "weatherState"],
     transitions=[
         {
             "trigger": "advance",
@@ -52,23 +52,23 @@ machine = TocMachine(
         {
             "trigger": "advance",
             "source": "user",
-            "dest": "searchImage",
-            "conditions": "is_going_to_searchImage",
+            "dest": "searchImageState",
+            "conditions": "is_going_to_searchImageState",
         },
         {
             "trigger": "advance",
             "source": "user",
-            "dest": "help",
-            "conditions": "is_going_to_help",
+            "dest": "helpState",
+            "conditions": "is_going_to_helpState",
         },
         {
             "trigger": "advance",
             "source": "user",
-            "dest": "weather",
-            "conditions": "is_going_to_weather",
+            "dest": "weatherState",
+            "conditions": "is_going_to_weatherState",
         },
         {"trigger": "go_back", "source": [
-            "secretState", "noteState", "jokeState", "searchImage", "help", "weather"], "dest": "user"},
+            "secretState", "noteState", "jokeState", "searchImageState", "helpState", "weatherState"], "dest": "user"},
     ],
     initial="user",
     auto_transitions=False,
